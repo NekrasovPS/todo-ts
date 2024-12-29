@@ -10,10 +10,12 @@ const App = () => {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('All');
 
-  const addTask = (description) => {
+  const addTask = (title, min, sec) => {
     const newTask = {
       id: Date.now(),
-      description,
+      title,
+      min: parseInt(min, 10),
+      sec: parseInt(sec, 10),
       completed: false,
       created: new Date(),
     };
@@ -34,8 +36,8 @@ const App = () => {
     setTasks(updatedTasks);
   };
 
-  const updateTaskDescription = (id, newDescription) => {
-    const updatedTasks = tasks.map((task) => (task.id === id ? { ...task, description: newDescription } : task));
+  const updateTaskTitle = (id, newTitle) => {
+    const updatedTasks = tasks.map((task) => (task.id === id ? { ...task, title: newTitle } : task));
     setTasks(updatedTasks);
   };
 
@@ -57,7 +59,7 @@ const App = () => {
         <TaskList
           onDeleteTask={deleteTask}
           onTaskCompletion={taskCompletion}
-          onUpdateTask={updateTaskDescription}
+          onUpdateTask={updateTaskTitle}
           tasks={getFilteredTasks()}
         />
         <Footer

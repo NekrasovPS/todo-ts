@@ -14,7 +14,7 @@ const TaskList = ({ tasks = [], onDeleteTask = () => {}, onTaskCompletion = () =
           {...task}
           onDelete={() => onDeleteTask(task.id)}
           onCompletion={() => onTaskCompletion(task.id)}
-          onUpdate={(newDescription) => onUpdateTask(task.id, newDescription)}
+          onUpdate={(newTitle) => onUpdateTask(task.id, newTitle)}
         />
       ))}
     </ul>
@@ -25,7 +25,7 @@ TaskList.propTypes = {
   tasks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
-      description: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
       completed: PropTypes.bool.isRequired,
       created: PropTypes.instanceOf(Date).isRequired,
     })
