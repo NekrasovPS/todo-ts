@@ -7,22 +7,35 @@ const Header = ({ onAddTask = () => {} }) => {
   const [inputValueMin, setInputValueMin] = useState('');
   const [inputValueSec, setInputValueSec] = useState('');
 
+  // Обработчики ввода
   const inputChange = (e) => {
     setInputValue(e.target.value);
   };
 
   const inputChangeMin = (e) => {
-    setInputValueMin(e.target.value);
+    const value = e.target.value;
+    if (/^\d*$/.test(value) && value >= 0) {
+      // Разрешаем только числа
+      setInputValueMin(value);
+    }
   };
 
   const inputChangeSec = (e) => {
-    setInputValueSec(e.target.value);
+    const value = e.target.value;
+    if (/^\d*$/.test(value) && value >= 0 && value <= 59) {
+      // Проверяем диапазон от 0 до 59
+      setInputValueSec(value);
+    }
   };
 
+  // Обработчик отправки формы
   const clickEnter = (e) => {
     e.preventDefault();
-    if (inputValue.trim() && !isNaN(inputValueMin) && !isNaN(inputValueSec)) {
-      onAddTask(inputValue.trim(), inputValueMin || 0, inputValueSec || 0);
+    const minutes = parseInt(inputValueMin, 10) || 0; // Преобразуем в число или 0
+    const seconds = parseInt(inputValueSec, 10) || 0; // Преобразуем в число или 0
+
+    if (inputValue.trim() !== '' && (minutes > 0 || seconds > 0)) {
+      onAddTask(inputValue, minutes, seconds);
       setInputValue('');
       setInputValueMin('');
       setInputValueSec('');
@@ -34,8 +47,21 @@ const Header = ({ onAddTask = () => {} }) => {
       <h1>todos</h1>
       <form className="new-todo-form" onSubmit={clickEnter}>
         <input className="new-todo" placeholder="Task" autoFocus value={inputValue} onChange={inputChange} />
-        <input className="new-todo-form__timer" placeholder="Min" value={inputValueMin} onChange={inputChangeMin} />
-        <input className="new-todo-form__timer" placeholder="Sec" value={inputValueSec} onChange={inputChangeSec} />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Min"
+          value={inputValueMin}
+          onChange={inputChangeMin}
+          min="0"
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          value={inputValueSec}
+          onChange={inputChangeSec}
+          min="0"
+          max="59"
+        />
         <button type="submit" style={{ display: 'none' }}></button>
       </form>
     </header>
