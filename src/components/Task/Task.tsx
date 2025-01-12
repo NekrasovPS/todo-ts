@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
-import './Task.css';
 
-const Task = ({
+import styles from './Task.module.css';
+
+interface TaskProps {
+  id: number;
+  title: string;
+  min: number;
+  sec: number;
+  completed: boolean;
+  created: Date;
+  onDelete: () => void;
+  onCompletion: () => void;
+  onUpdate: (newTitle: string) => void;
+}
+
+const Task: React.FC<TaskProps> = ({
   title = '',
   min = 0,
   sec = 0,
   completed = false,
   created,
-  onDelete = () => {},
-  onCompletion = () => {},
-  onUpdate = () => {},
+  onDelete,
+  onCompletion,
+  onUpdate,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title);
@@ -46,7 +59,7 @@ const Task = ({
     setIsEditing(true);
   };
 
-  const handleTitleChange = (e) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentTitle(e.target.value);
   };
 
@@ -55,43 +68,43 @@ const Task = ({
     onUpdate(currentTitle);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setIsEditing(false);
       onUpdate(currentTitle);
     }
   };
 
-  const handlePlayClick = () => {
+  const handlePlayClick = (): void => {
     if (time.minutes > 0 || time.seconds > 0) {
       setIsRunning(true);
     }
   };
 
-  const handlePauseClick = () => {
+  const handlePauseClick = (): void => {
     setIsRunning(false);
   };
 
   return (
-    <li className={`${completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}>
-      <div className="view">
-        <input className="toggle" type="checkbox" checked={completed} onChange={onCompletion} />
+    <li className={`${styles.li_item} ${completed ? styles.completed : ''} ${isEditing ? styles.editing : ''}`}>
+      <div className={styles.view}>
+        <input className={styles.toggle} type="checkbox" checked={completed} onChange={onCompletion} />
         <label>
-          <span className="title">{title}</span>
-          <span className="description">
-            <button className="icon icon-play" onClick={handlePlayClick}></button>
-            <button className="icon icon-pause" onClick={handlePauseClick}></button>
+          <span className={styles.title}>{title}</span>
+          <span className={styles.description}>
+            <button className={`${styles.icon} ${styles.icon_play}`} onClick={handlePlayClick}></button>
+            <button className={`${styles.icon} ${styles.icon_pause}`} onClick={handlePauseClick}></button>
             {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
           </span>
-          <span className="description">created {createdTime}</span>
+          <span className={styles.description}>created {createdTime}</span>
         </label>
-        <button className="icon icon-edit" onClick={handleEditClick}></button>
-        <button className="icon icon-destroy" onClick={onDelete}></button>
+        <button className={`${styles.icon} ${styles.icon_edit}`} onClick={handleEditClick}></button>
+        <button className={`${styles.icon} ${styles.icon_destroy}`} onClick={onDelete}></button>
       </div>
       {isEditing && (
         <input
           type="text"
-          className="edit"
+          className={styles.edit}
           value={currentTitle}
           onChange={handleTitleChange}
           onBlur={handleBlur}

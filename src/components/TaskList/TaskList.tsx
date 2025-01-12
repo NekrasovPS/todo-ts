@@ -1,20 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Task from '../Task';
+import styles from './TaskList.module.css';
 
-import Task from '../Task/Task';
+interface TaskType {
+  id: number;
+  title: string;
+  completed: boolean;
+  created: Date;
+}
 
-import './TaskList.css';
+interface TaskListProps {
+  tasks: TaskType[];
+  onDeleteTask: (id: number) => void;
+  onTaskCompletion: (id: number) => void;
+  onUpdateTask: (id: number, newTitle: string) => void;
+}
 
-const TaskList = ({ tasks = [], onDeleteTask = () => {}, onTaskCompletion = () => {}, onUpdateTask = () => {} }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks = [], onDeleteTask, onTaskCompletion, onUpdateTask }) => {
   return (
-    <ul className="todo-list">
+    <ul className={styles.todo_list}>
       {tasks.map((task) => (
         <Task
+          min={0}
+          sec={0}
           key={task.id}
           {...task}
           onDelete={() => onDeleteTask(task.id)}
           onCompletion={() => onTaskCompletion(task.id)}
-          onUpdate={(newTitle) => onUpdateTask(task.id, newTitle)}
+          onUpdate={(newTitle: string) => onUpdateTask(task.id, newTitle)}
         />
       ))}
     </ul>

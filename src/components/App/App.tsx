@@ -1,47 +1,56 @@
 import React, { useState } from 'react';
 
-import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
 import TaskList from '../TaskList/TaskList';
+import Footer from '../Footer/Footer';
 
-import './App.css';
+import styles from './App.module.css';
 
-const App = () => {
-  const [tasks, setTasks] = useState([]);
-  const [filter, setFilter] = useState('All');
+interface Task {
+  id: number;
+  title: string;
+  min: number;
+  sec: number;
+  completed: boolean;
+  created: Date;
+}
 
-  const addTask = (title, min, sec) => {
+const App: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [filter, setFilter] = useState<'All' | 'Active' | 'Completed'>('All');
+
+  const addTask = (title: string, min: number, sec: number) => {
     const newTask = {
       id: Date.now(),
       title,
-      min: parseInt(min, 10),
-      sec: parseInt(sec, 10),
+      min,
+      sec,
       completed: false,
       created: new Date(),
     };
     setTasks([...tasks, newTask]);
   };
 
-  const deleteTask = (id) => {
+  const deleteTask = (id: number): void => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
   };
 
-  const deletedAllTask = () => {
+  const deletedAllTask = (): void => {
     setTasks([]);
   };
 
-  const taskCompletion = (id) => {
+  const taskCompletion = (id: number): void => {
     const updatedTasks = tasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task));
     setTasks(updatedTasks);
   };
 
-  const updateTaskTitle = (id, newTitle) => {
+  const updateTaskTitle = (id: number, newTitle: string): void => {
     const updatedTasks = tasks.map((task) => (task.id === id ? { ...task, title: newTitle } : task));
     setTasks(updatedTasks);
   };
 
-  const getFilteredTasks = () => {
+  const getFilteredTasks = (): Task[] => {
     switch (filter) {
       case 'Active':
         return tasks.filter((task) => !task.completed);
@@ -53,9 +62,9 @@ const App = () => {
   };
 
   return (
-    <section className="todoapp">
+    <section className={styles.todo_app}>
       <Header onAddTask={addTask} />
-      <section className="main">
+      <section className={styles.main}>
         <TaskList
           onDeleteTask={deleteTask}
           onTaskCompletion={taskCompletion}
