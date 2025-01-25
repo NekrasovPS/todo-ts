@@ -11,24 +11,28 @@ interface TaskProps {
   sec: number;
   completed: boolean;
   created: Date;
+  isRunning: boolean; // добавлен пропс для состояния таймера
   onDelete: () => void;
   onCompletion: () => void;
   onUpdate: (newTitle: string) => void;
+  onToggleRunning: () => void; // добавлен пропс для переключения таймера
 }
 
 const Task: React.FC<TaskProps> = ({
+  id,
   title = '',
   min = 0,
   sec = 0,
   completed = false,
   created,
+  isRunning,
   onDelete,
   onCompletion,
   onUpdate,
+  onToggleRunning, // используем для переключения состояния таймера
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentTitle, setCurrentTitle] = useState(title);
-  const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState({ minutes: min, seconds: sec });
 
   const createdTime = formatDistanceToNow(new Date(created), {
@@ -77,12 +81,12 @@ const Task: React.FC<TaskProps> = ({
 
   const handlePlayClick = (): void => {
     if (time.minutes > 0 || time.seconds > 0) {
-      setIsRunning(true);
+      onToggleRunning(); // вызываем для переключения таймера
     }
   };
 
   const handlePauseClick = (): void => {
-    setIsRunning(false);
+    onToggleRunning(); // вызываем для переключения таймера
   };
 
   return (
@@ -92,8 +96,16 @@ const Task: React.FC<TaskProps> = ({
         <label>
           <span className={styles.title}>{title}</span>
           <span className={styles.description}>
-            <button className={`${styles.icon} ${styles.icon_play}`} onClick={handlePlayClick}></button>
-            <button className={`${styles.icon} ${styles.icon_pause}`} onClick={handlePauseClick}></button>
+            <button
+              className={`${styles.icon} ${styles.icon_play}`}
+              onClick={handlePlayClick}
+              disabled={isRunning} // кнопка play отключена, если таймер работает
+            ></button>
+            <button
+              className={`${styles.icon} ${styles.icon_pause}`}
+              onClick={handlePauseClick}
+              disabled={!isRunning} // кнопка pause отключена, если таймер не работает
+            ></button>
             {String(time.minutes).padStart(2, '0')}:{String(time.seconds).padStart(2, '0')}
           </span>
           <span className={styles.description}>created {createdTime}</span>
@@ -122,9 +134,11 @@ Task.propTypes = {
   sec: PropTypes.number.isRequired,
   completed: PropTypes.bool.isRequired,
   created: PropTypes.instanceOf(Date).isRequired,
+  isRunning: PropTypes.bool.isRequired, // добавлено для типа
   onDelete: PropTypes.func.isRequired,
   onCompletion: PropTypes.func.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onToggleRunning: PropTypes.func.isRequired, // добавлено для типа
 };
 
 export default Task;

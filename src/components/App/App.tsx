@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Header from '../Header/Header';
 import TaskList from '../TaskList/TaskList';
@@ -13,20 +13,42 @@ interface Task {
   sec: number;
   completed: boolean;
   created: Date;
+  isRunning: boolean;
 }
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<'All' | 'Active' | 'Completed'>('All');
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => {
+          if (task.isRunning && (task.min > 0 || task.sec > 0)) {
+            const newSec = task.sec - 1;
+            const newMin = task.min + Math.floor(newSec / 60);
+            return {
+              ...task,
+              min: newMin,
+              sec: (newSec + 60) % 60,
+            };
+          }
+          return task;
+        })
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const addTask = (title: string, min: number, sec: number) => {
-    const newTask = {
+    const newTask: Task = {
       id: Date.now(),
       title,
       min,
       sec,
       completed: false,
       created: new Date(),
+      isRunning: false,
     };
     setTasks([...tasks, newTask]);
   };
@@ -38,6 +60,10 @@ const App: React.FC = () => {
 
   const deletedAllTask = (): void => {
     setTasks([]);
+  };
+
+  const toggleTaskRunning = (id: number): void => {
+    setTasks((prevTasks) => prevTasks.map((task) => (task.id === id ? { ...task, isRunning: !task.isRunning } : task)));
   };
 
   const taskCompletion = (id: number): void => {
@@ -69,6 +95,7 @@ const App: React.FC = () => {
           onDeleteTask={deleteTask}
           onTaskCompletion={taskCompletion}
           onUpdateTask={updateTaskTitle}
+          onToggleTaskRunning={toggleTaskRunning}
           tasks={getFilteredTasks()}
         />
         <Footer
